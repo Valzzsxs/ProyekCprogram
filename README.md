@@ -1,6 +1,6 @@
 # 🛠️ STM32 Proyek Otomatisasi Gate Waduk dan Pompa Air
 
-Proyek ini menggunakan **STM32F4** dan bahasa pemrograman **C (HAL Library)** untuk mengontrol **gate waduk dan pompa air** secara otomatis berdasarkan:
+Proyek ini menggunakan **STM32** dan bahasa pemrograman **C (HAL Library)** untuk mengontrol **gate waduk dan pompa air** secara otomatis berdasarkan:
 - Sensor kelembaban tanah
 - Sensor ketinggian air waduk
 - Sensor ketinggian air luar (misal sungai)
