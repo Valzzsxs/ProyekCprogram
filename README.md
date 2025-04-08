@@ -13,7 +13,8 @@ Sistem ini dirancang untuk aplikasi seperti:
 - Muhammad Ali Makki (2042231023)
 - Bagus WiJaksono (2042231039)
 - Rivaldi Satrio Wicaksono (2042231043) 
-  Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember
+
+Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember
 
 ---
 
