@@ -1,60 +1,126 @@
-# 🛠️ STM32 Proyek Otomatisasi Gate Waduk dan Pompa Air
+# Kontrol Otomatis Gerbang dan Pompa Air Menggunakan STM32 dan Sensor Kelembaban Tanah & Ketinggian Air
 
-Proyek ini menggunakan **STM32** dan bahasa pemrograman **C (HAL Library)** untuk mengontrol **gate waduk dan pompa air** secara otomatis berdasarkan:
-- Sensor kelembaban tanah
-- Sensor ketinggian air waduk
-- Sensor ketinggian air luar (misal sungai)
+Proyek ini merupakan panduan lengkap untuk membangun sistem otomatisasi pengendalian gerbang air (waduk) dan pompa berdasarkan pembacaan sensor kelembaban tanah serta sensor ketinggian air. Sistem ini dikembangkan menggunakan mikrokontroler STM32 (dengan pustaka HAL) dan bahasa pemrograman C.
 
-## 🚀 Fitur Utama
-- Otomatis membuka gate saat air luar lebih tinggi dari waduk
-- Menutup gate saat ketinggian setara
-- Mengaktifkan pompa jika tanah kering & air waduk mencukupi
+Sistem ini dirancang untuk aplikasi seperti:
+- Irigasi pintar
+- Manajemen banjir
+- Pengelolaan air otomatis
 
----
+## 👨‍💻 Penulis
 
-## ⚙️ Perangkat Keras yang Digunakan
-- STM32F4xx board (misal: STM32F401RE, STM32F411)
-- Sensor kelembaban tanah (analog output)
-- Sensor level air (misal: sensor tekanan atau pelampung analog)
-- Motor servo / DC untuk gate (diaktifkan via GPIO)
-- Pompa air (diaktifkan via GPIO)
+- [Nama Anda] (NRP Anda)  
+  Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember
 
 ---
 
-## 🧠 Struktur Modul Program
-- `main.c` – Fungsi utama dan loop kontrol
-- `GPIO_Init()` – Konfigurasi pin untuk motor & pompa
-- `ADC_Init()` – Setup ADC untuk membaca sensor
+## ✨ Fitur Utama
+
+- Membuka gerbang otomatis jika ketinggian air di luar > air di dalam waduk
+- Menutup gerbang jika level air sama
+- Mengaktifkan pompa jika tanah kering dan air di waduk cukup
+
+---
+
+## 🛠️ Kebutuhan Perangkat Keras
+
+- Board STM32F4 (mis. STM32F401RE Nucleo)
+- Sensor kelembaban tanah (analog)
+- Sensor ketinggian air (analog – dalam dan luar waduk)
+- Motor penggerak gerbang (dengan relay atau driver motor)
+- Pompa air (dengan relay atau driver pompa)
+
+---
+
+## 🧩 Struktur Modul Program
+
+### File Program:
+- `main.c` – Fungsi utama dan loop program
+- `SystemClock_Config()` – Inisialisasi clock sistem
+- `GPIO_Init()` – Inisialisasi pin GPIO untuk motor & pompa
+- `ADC_Init()` – Konfigurasi ADC untuk pembacaan sensor
 - `Read_Soil_Moisture()` – Membaca kelembaban tanah
-- `Read_Water_Level_Waduk()` – Membaca tinggi air waduk
-- `Read_Water_Level_Luar()` – Membaca tinggi air luar
-- `Control_Gate()` – Logika kontrol otomatis berdasarkan pembacaan sensor
+- `Read_Water_Level_Waduk()` – Membaca level air waduk
+- `Read_Water_Level_Luar()` – Membaca level air luar
+- `Control_Gate()` – Logika pengambilan keputusan otomatis
 
 ---
 
-## 📥 Cara Menggunakan
-1. Clone repository:
-   ```bash
-   git clone https://github.com/namakamu/stm32-waduk-otomatis.git
-   ```
+## 🚀 Cara Menjalankan Proyek Ini
 
-2. Buka project ini di **STM32CubeIDE**.
+### 1. Clone Repository
+```bash
+git clone https://github.com/namakamu/stm32-waduk-otomatis.git
+cd stm32-waduk-otomatis
+```
 
-3. Hubungkan sensor dan aktuator sesuai pin berikut:
+### 2. Buka di STM32CubeIDE
+- Import folder ke STM32CubeIDE sebagai project STM32 yang sudah ada
+- Compile program
+- Upload ke board STM32 menggunakan ST-Link
 
-| Fungsi               | Pin GPIO |
-|----------------------|----------|
-| Kelembaban Tanah     | PA0      |
-| Level Air Waduk      | PA1      |
-| Level Air Luar       | PA2      |
-| Motor Buka Gate      | PA4      |
-| Motor Tutup Gate     | PA5      |
-| Pompa Air            | PA6      |
+### 3. Hubungkan Perangkat Keras
+- PA0: Sensor kelembaban tanah
+- PA1: Sensor level air (dalam waduk)
+- PA2: Sensor level air (luar waduk)
+- PA4: Motor buka gerbang
+- PA5: Motor tutup gerbang
+- PA6: Pompa air
 
-4. Build project lalu flash ke board STM32 kamu.
+### 4. Amati Perilaku Sistem
+- Gerbang akan terbuka/tertutup otomatis berdasarkan level air
+- Pompa menyala jika tanah kering dan waduk memiliki cukup air
 
-5. Jalankan dan monitor hasilnya secara fisik atau lewat debugger.
+---
+
+## 🧠 Alur Program
+
+### `main()`
+Melakukan inisialisasi HAL, Clock, GPIO, dan ADC. Membaca nilai sensor tiap 5 detik dan memanggil `Control_Gate()`.
+
+### `Read_Soil_Moisture()`
+Mengakses ADC1 pada pin PA0 untuk membaca sensor kelembaban.
+
+### `Read_Water_Level_Waduk()`
+Mengakses ADC1 pada pin PA1 untuk membaca level air dalam waduk.
+
+### `Read_Water_Level_Luar()`
+Mengakses ADC2 pada pin PA2 untuk membaca level air luar.
+
+### `Control_Gate()`
+- Jika air luar > dalam → gerbang terbuka
+- Jika sama → gerbang tertutup
+- Jika tanah kering & air waduk cukup → pompa menyala
+
+---
+
+## 📝 Catatan Tambahan
+
+- Threshold default: kelembaban tanah < 1000, level air waduk > 500
+- Silakan sesuaikan nilai ambang berdasarkan kalibrasi sensor Anda
+- Semua I/O menggunakan port GPIOA
+
+---
+
+## 🔭 Rencana Pengembangan
+
+- Tambahkan komunikasi UART untuk debug data sensor
+- Tambahkan layar LCD/OLED untuk tampilan real-time
+- Integrasi RTC untuk penyiraman terjadwal
+- Koneksikan ke cloud atau IoT dengan ESP32/LoRa
+
+---
+
+## ✅ Checklist Pengujian
+
+- [x] Gerbang terbuka saat air luar lebih tinggi dari waduk
+- [x] Gerbang tertutup saat level sama
+- [x] Pompa menyala saat tanah kering dan air waduk mencukupi
+- [x] Delay antar pembacaan sensor (5 detik)
+
+---
 
 ## 📄 Lisensi
-Project ini dilisensikan di bawah MIT License.
+
+Lisensi MIT – Bebas digunakan dan dimodifikasi untuk kepentingan pembelajaran atau penelitian.
 
