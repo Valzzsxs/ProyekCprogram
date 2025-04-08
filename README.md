@@ -126,5 +126,5 @@ Mengakses ADC2 pada pin PA2 untuk membaca level air luar.
 
 ## 📄 Lisensi
 
-Lisensi MIT – Bebas digunakan dan dimodifikasi untuk kepentingan pembelajaran atau penelitian.
+Kelompok 7 Pemrograman Kontroller.
 
