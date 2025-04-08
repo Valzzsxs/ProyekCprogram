@@ -6,7 +6,7 @@
 #define WATER_LEVEL_LUAR_GPIO_PIN    GPIO_PIN_2U   /* Sensor Level Air Luar (PA2) */
 #define MOTOR_OPEN_GPIO_PIN          GPIO_PIN_4U   /* Motor Membuka Gate (PA4) */
 #define MOTOR_CLOSE_GPIO_PIN         GPIO_PIN_5U   /* Motor Menutup Gate (PA5) */
-#define PUMP_GPIO_PIN                GPIO_PIN_6U   /* Pompa Air Luar (PA6) */
+#define PUMP_GPIO_PIN                GPIO_PIN_6U   /* Pompa Air (PA6) */
 
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
@@ -15,12 +15,12 @@ ADC_HandleTypeDef hadc2;
 static void SystemClock_Config(void);
 static void GPIO_Init(void);
 static void ADC_Init(void);
-static void Control_Gate(int soilMoisture, int waterLevelWaduk, int waterLevelLuar);
 static int Read_Soil_Moisture(void);
 static int Read_Water_Level_Waduk(void);
 static int Read_Water_Level_Luar(void);
+static void Control_Gate(uint32_t soil, uint32_t waduk, uint32_t luar);
 
-/* Membaca Sensor Kelembaban Tanah */
+/* Fungsi Membaca Sensor */
 int Read_Soil_Moisture(void)
 {
     HAL_ADC_Start(&hadc1);
@@ -28,7 +28,6 @@ int Read_Soil_Moisture(void)
     return (int)HAL_ADC_GetValue(&hadc1);
 }
 
-/* Membaca Sensor Level Air Waduk */
 int Read_Water_Level_Waduk(void)
 {
     HAL_ADC_Start(&hadc1);
@@ -36,7 +35,6 @@ int Read_Water_Level_Waduk(void)
     return (int)HAL_ADC_GetValue(&hadc1);
 }
 
-/* Membaca Sensor Level Air Luar */
 int Read_Water_Level_Luar(void)
 {
     HAL_ADC_Start(&hadc2);
@@ -44,31 +42,41 @@ int Read_Water_Level_Luar(void)
     return (int)HAL_ADC_GetValue(&hadc2);
 }
 
-/* Logika Kontrol Gate dan Pompa */
-void Control_Gate(int soilMoisture, int waterLevelWaduk, int waterLevelLuar)
+/* Fungsi Kontrol Gerbang dan Pompa (versi gabungan) */
+void Control_Gate(uint32_t soil, uint32_t waduk, uint32_t luar)
 {
-    if (waterLevelLuar > waterLevelWaduk)
+    if (luar > waduk)
     {
-        HAL_GPIO_WritePin(GPIOA, MOTOR_OPEN_GPIO_PIN, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOA, MOTOR_CLOSE_GPIO_PIN, GPIO_PIN_RESET);
+        // Air luar lebih tinggi → buka gerbang, pompa mati
+        HAL_GPIO_WritePin(GPIOA, MOTOR_OPEN_GPIO_PIN, GPIO_PIN_SET);   // Motor buka
+        HAL_GPIO_WritePin(GPIOA, MOTOR_CLOSE_GPIO_PIN, GPIO_PIN_RESET); // Motor tutup
+        HAL_GPIO_WritePin(GPIOA, PUMP_GPIO_PIN, GPIO_PIN_RESET);       // Pompa mati
     }
-    else if (waterLevelLuar == waterLevelWaduk)
+    else if (waduk == luar)
     {
+        // Air sama → gerbang ditutup, pompa aktif untuk alirkan dari luar ke dalam
         HAL_GPIO_WritePin(GPIOA, MOTOR_OPEN_GPIO_PIN, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOA, MOTOR_CLOSE_GPIO_PIN, GPIO_PIN_SET);
-    }
-
-    if ((soilMoisture < 1000) && (waterLevelWaduk > 500))
-    {
-        HAL_GPIO_WritePin(GPIOA, PUMP_GPIO_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOA, PUMP_GPIO_PIN, GPIO_PIN_SET);         // Pompa ON
     }
     else
     {
-        HAL_GPIO_WritePin(GPIOA, PUMP_GPIO_PIN, GPIO_PIN_RESET);
+        // Air luar lebih rendah dari dalam
+        HAL_GPIO_WritePin(GPIOA, MOTOR_OPEN_GPIO_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOA, MOTOR_CLOSE_GPIO_PIN, GPIO_PIN_SET);
+
+        if (soil < 1000 && waduk > 500)
+        {
+            HAL_GPIO_WritePin(GPIOA, PUMP_GPIO_PIN, GPIO_PIN_SET);     // Pompa ON (penyiraman)
+        }
+        else
+        {
+            HAL_GPIO_WritePin(GPIOA, PUMP_GPIO_PIN, GPIO_PIN_RESET);   // Pompa OFF
+        }
     }
 }
 
-/* Program Utama */
+/* Fungsi Utama */
 int main(void)
 {
     HAL_Init();
@@ -78,13 +86,13 @@ int main(void)
 
     while (1)
     {
-        int soilMoisture = Read_Soil_Moisture();
+        int soilMoisture    = Read_Soil_Moisture();
         int waterLevelWaduk = Read_Water_Level_Waduk();
-        int waterLevelLuar = Read_Water_Level_Luar();
+        int waterLevelLuar  = Read_Water_Level_Luar();
 
         Control_Gate(soilMoisture, waterLevelWaduk, waterLevelLuar);
 
-        HAL_Delay(5000U);
+        HAL_Delay(5000U); // Delay 5 detik
     }
 }
 
@@ -127,19 +135,19 @@ static void ADC_Init(void)
     hadc1.Init.NbrOfConversion       = 1U;
     HAL_ADC_Init(&hadc1);
 
-    sConfig.Channel      = ADC_CHANNEL_0;
+    sConfig.Channel      = ADC_CHANNEL_0; // Soil
     sConfig.Rank         = 1U;
     sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
     HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
-    sConfig.Channel = ADC_CHANNEL_1;
+    sConfig.Channel = ADC_CHANNEL_1; // Waduk
     HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     hadc2.Instance = ADC2;
     hadc2.Init     = hadc1.Init;
     HAL_ADC_Init(&hadc2);
 
-    sConfig.Channel = ADC_CHANNEL_2;
+    sConfig.Channel = ADC_CHANNEL_2; // Luar
     HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
     HAL_ADC_Start(&hadc1);
