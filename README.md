@@ -1,6 +1,6 @@
-# Kontrol Otomatis Gerbang dan Pompa Air Menggunakan STM32 dan Sensor Kelembaban Tanah & Ketinggian Air
+# Sistem Otomatisasi Pengelolaan Air Waduk Berbasis STM32
 
-Proyek ini merupakan panduan lengkap untuk membangun sistem otomatisasi pengendalian gerbang air (waduk) dan pompa berdasarkan pembacaan sensor kelembaban tanah serta sensor ketinggian air. Sistem ini dikembangkan menggunakan mikrokontroler STM32 (dengan pustaka HAL) dan bahasa pemrograman C.
+Sistem ini bekerja dengan membaca data dari sensor kelembaban tanah, sensor ketinggian air di dalam waduk, dan sensor ketinggian air di luar waduk. Berdasarkan data ini, sistem akan mengambil keputusan secara otomatis untuk membuka atau menutup gerbang air, serta mengaktifkan atau mematikan pompa air. Tujuannya adalah untuk mengelola aliran air secara efisien, menjaga kestabilan air waduk, serta mendukung irigasi lahan secara pintar dan responsif terhadap kondisi lingkungan.
 
 Sistem ini dirancang untuk aplikasi seperti:
 - Irigasi pintar
@@ -9,7 +9,10 @@ Sistem ini dirancang untuk aplikasi seperti:
 
 ## 👨‍💻 Penulis
 
-- [Nama Anda] (NRP Anda)  
+- Muhammad 'Azmilfadhil Syamsudin (2042231003)
+- Muhammad Ali Makki (2042231023)
+- Bagus WiJaksono (2042231039)
+- Rivaldi Satrio Wicaksono (2042231043) 
   Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember
 
 ---
@@ -18,7 +21,7 @@ Sistem ini dirancang untuk aplikasi seperti:
 
 - Membuka gerbang otomatis jika ketinggian air di luar > air di dalam waduk
 - Menutup gerbang jika level air sama
-- Mengaktifkan pompa jika tanah kering dan air di waduk cukup
+- Mengaktifkan pompa jika tanah kering dan jika air di waduk sama dengan diluar untuk repompa
 
 ---
 
