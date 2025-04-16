@@ -4,6 +4,15 @@ Proyek ini melibatkan pengontrolan sistem gerbang air dan pompa menggunakan mikr
 1. **Relay 1 (Buka Gerbang)**: Mengontrol motor untuk membuka gerbang air.
 2. **Relay 2 (Tutup Gerbang)**: Mengontrol motor untuk menutup gerbang air.
 3. **Relay 3 (Pompa)**: Mengontrol pompa untuk memasukkan air ke dalam waduk ketika level air di dalam dan di luar waduk hampir sama.
+4. 
+## Authors
+
+- Muhammad 'Azmilfadhil S. (2042231003)
+- Bagus Wijaksono (2042231029)
+- Rivaldi Satrio W. (2042231043)
+- Ahmad Radhy (supervisor)
+
+Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember
 
 ## Daftar Isi
 - [Gambaran Sistem](#gambaran-sistem)
@@ -85,7 +94,7 @@ Sistem ini terdiri dari:
 ## Cara Penggunaan
 
 1. **Hubungkan Perangkat Keras**: Pastikan sensor level air terhubung ke pin ADC yang benar (ADC1 dan ADC2). Hubungkan relay ke pin GPIO yang ditentukan (PA4, PA5, PA6) untuk kontrol motor dan pompa.
-2. **Kompilasi dan Upload**: Gunakan STM32CubeIDE atau alat lain yang sesuai untuk mengkompilasi dan mengupload kode ke mikrokontroler STM32F4.
+2. **Kompilasi dan Upload**: Gunakan STM32CubeIDE atau alat lain yang sesuai untuk mengkompilasi dan mengupload kode ke mikrokontroler STM32.
 3. **Pantau dan Uji**: Setelah diupload, sistem akan memeriksa level air secara berkelanjutan dan mengontrol gerbang dan pompa sesuai dengan logika yang telah ditentukan.
 
 ## Lisensi
