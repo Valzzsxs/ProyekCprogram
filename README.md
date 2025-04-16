@@ -1,14 +1,15 @@
-# Sistem Kontrol Gerbang Air dan Pompa
+# Embeded System Pada SIstem Irigasi Persawahan
 
-Proyek ini melibatkan pengontrolan sistem gerbang air dan pompa menggunakan mikrokontroler STM32, berdasarkan pembacaan level air dari dua sensor (di dalam dan di luar waduk). Sistem ini menggunakan 3 relay:
+Proyek ini bertujuan untuk mengontrol gerbang air dan pompa pada sebuah waduk menggunakan mikrokontroler STM32. Sistem ini mengandalkan dua sensor untuk memantau level air di dalam waduk dan di luar waduk. Berdasarkan pembacaan dari sensor tersebut, sistem akan mengontrol gerbang dan pompa secara otomatis untuk irigasi sawah. Sistem ini menggunakan 3 relay:
 1. **Relay 1 (Buka Gerbang)**: Mengontrol motor untuk membuka gerbang air.
 2. **Relay 2 (Tutup Gerbang)**: Mengontrol motor untuk menutup gerbang air.
 3. **Relay 3 (Pompa)**: Mengontrol pompa untuk memasukkan air ke dalam waduk ketika level air di dalam dan di luar waduk hampir sama.
-4. 
+
 ## Authors
 
 - Muhammad 'Azmilfadhil S. (2042231003)
-- Bagus Wijaksono (2042231029)
+- Muhammad Ali Makki (2042231023)
+- Bagus Wijaksono (2042231039)
 - Rivaldi Satrio W. (2042231043)
 - Ahmad Radhy (supervisor)
 
@@ -28,7 +29,7 @@ Sistem ini terdiri dari:
 2. **Motor dan Relay**: Motor digunakan untuk mengontrol pembukaan dan penutupan gerbang air. Dua relay digunakan untuk mengontrol arah motor.
 3. **Pompa dan Relay**: Pompa digunakan untuk memasukkan air ke dalam waduk ketika level air di dalam dan di luar waduk hampir sama.
 
-### Penugasan Pin GPIO
+### Pin GPIO
 - **Relay 1 (Buka Gerbang)**: PA4
 - **Relay 2 (Tutup Gerbang)**: PA5
 - **Relay 3 (Pompa)**: PA6
@@ -36,7 +37,7 @@ Sistem ini terdiri dari:
 - **Sensor Level Air 2 (Luar Waduk)**: ADC2 (PA2)
 
 ## Pengaturan Perangkat Keras
-- **STM32F4**: Mikrokontroler digunakan untuk menangani input ADC dari sensor level air dan mengontrol pin GPIO untuk operasi relay.
+- **STM32**: Mikrokontroler digunakan untuk menangani input ADC dari sensor level air dan mengontrol pin GPIO untuk operasi relay.
 - **Relay 1**: Mengontrol motor untuk membuka gerbang (terhubung ke pin GPIO PA4).
 - **Relay 2**: Mengontrol motor untuk menutup gerbang (terhubung ke pin GPIO PA5).
 - **Relay 3**: Mengontrol pompa (terhubung ke pin GPIO PA6).
@@ -99,4 +100,4 @@ Sistem ini terdiri dari:
 
 ## Lisensi
 
-Proyek ini dilisensikan di bawah MIT License - lihat file [LICENSE](LICENSE) untuk detail.
+Kelompok 7 Mata Kuliah Pemrograman Kontroller.
