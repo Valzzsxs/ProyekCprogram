@@ -1,5 +1,6 @@
 # Embeded System Pada SIstem Irigasi Persawahan
 ![Alt text](https://github.com/Valzzsxs/ProyekCprogram/blob/main/waduk.jpg)
+
 Proyek ini bertujuan untuk mengontrol gerbang air dan pompa pada sebuah waduk menggunakan mikrokontroler STM32. Sistem ini mengandalkan dua sensor untuk memantau level air di dalam waduk dan di luar waduk. Berdasarkan pembacaan dari sensor tersebut, sistem akan mengontrol gerbang dan pompa secara otomatis untuk irigasi sawah. Sistem ini menggunakan 3 relay:
 1. **Relay 1 (Buka Gerbang)**: Mengontrol motor untuk membuka gerbang air.
 2. **Relay 2 (Tutup Gerbang)**: Mengontrol motor untuk menutup gerbang air.
