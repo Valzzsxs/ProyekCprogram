@@ -2,12 +2,12 @@
 #include <math.h>
 
 /* GPIO Pin Definitions */
-#define WATER_LEVEL_WADUK_GPIO_PIN        GPIO_PIN_1U  // PA1
-#define WATER_LEVEL_LUAR_GPIO_PIN         GPIO_PIN_2U  // PA2
+#define WATER_LEVEL_WADUK_GPIO_PIN        GPIO_PIN_1  // PA1
+#define WATER_LEVEL_LUAR_GPIO_PIN         GPIO_PIN_2  // PA2
 
-#define RELAY_OPEN_GATE_GPIO_PIN          GPIO_PIN_4U  // PA4: Buka Gerbang
-#define RELAY_CLOSE_GATE_GPIO_PIN         GPIO_PIN_5U  // PA5: Tutup Gerbang
-#define RELAY_PUMP_GPIO_PIN               GPIO_PIN_6U  // PA6: Pompa Air
+#define RELAY_OPEN_GATE_GPIO_PIN          GPIO_PIN_4  // PA4: Buka Gerbang
+#define RELAY_CLOSE_GATE_GPIO_PIN         GPIO_PIN_5  // PA5: Tutup Gerbang
+#define RELAY_PUMP_GPIO_PIN               GPIO_PIN_6  // PA6: Pompa Air
 
 #define MAX_TINGGI_CM                     100.0f       // Tinggi maksimum air
 #define LEVEL_DIFF_OPEN_THRESHOLD         5.0f         // Selisih cm untuk membuka gerbang
