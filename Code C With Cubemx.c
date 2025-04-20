@@ -85,45 +85,60 @@ int main(void)
 
   /* MCU Configuration--------------------------------------------------------*/
   HAL_Init();
-  
+  /* CERT EXP33-C: Ensure that all system initialization functions succeed before use. */
+
   /* Configure the system clock */
   SystemClock_Config();
+  /* CERT EXP33-C: Validate configuration function success. */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
+  /* CERT MSC30-C: Avoid using unsafe functions; HAL functions should still be validated. */
 
   /* Infinite loop */
   while (1)
-  {
+{
     float tinggiWaduk = Read_Water_Level_Waduk_cm();
     float tinggiLuar  = Read_Water_Level_Luar_cm();
 
-    if (tinggiLuar > tinggiWaduk + LEVEL_DIFF_OPEN_THRESHOLD)
+    /* CERT FLP34-C: Validasi nilai floating point terhadap nilai error (< 0.0f) */
+    if (tinggiWaduk >= 0.0f && tinggiLuar >= 0.0f)
     {
-      // Buka gerbang (motor arah buka), pompa mati
-      HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_RESET);
-    }
-    else if (fabs(tinggiLuar - tinggiWaduk) < LEVEL_DIFF_EQUAL_THRESHOLD)
-    {
-      // Tutup gerbang (motor arah tutup), pompa hidup
-      HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_SET);
+        /* Logika normal saat sensor valid */
+        if (tinggiLuar > tinggiWaduk + LEVEL_DIFF_OPEN_THRESHOLD)
+        {
+            /* CERT MSC32-C: Gunakan logika aman untuk kontrol perangkat fisik */
+            HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_RESET);
+        }
+        else if (fabs(tinggiLuar - tinggiWaduk) < LEVEL_DIFF_EQUAL_THRESHOLD)
+        {
+            HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_SET);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_RESET);
+        }
     }
     else
     {
-      // Tutup gerbang (motor arah tutup), pompa mati
-      HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_RESET);
+        /* CERT ERR33-C: Tangani kondisi error dari pembacaan sensor dengan fail-safe */
+        HAL_GPIO_WritePin(GPIOA, RELAY_OPEN_GATE_GPIO_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOA, RELAY_CLOSE_GATE_GPIO_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(GPIOA, RELAY_PUMP_GPIO_PIN, GPIO_PIN_RESET);
     }
 
-    HAL_Delay(5000); // Delay 5 detik
-  }
+    /* CERT MSC30-C: Delay blocking perlu diperhitungkan jika sistem real-time */
+    HAL_Delay(5000); // Delay tetap di akhir loop
+}
+
 }
 
 /**
@@ -136,6 +151,8 @@ float Convert_ADC_to_cm(uint32_t adc_value)
     if (adc_value > 4095U)
     {
         return -1.0f;
+        /* CERT INT30-C: Ensure integer values are within valid bounds */
+        /* CERT FLP30-C: Avoid using floating-point return values as error codes */
     }
     return (adc_value / 4095.0f) * MAX_TINGGI_CM;
 }
@@ -150,6 +167,7 @@ float Read_Water_Level_Waduk_cm(void)
     if (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK)
     {
         return -1.0f;
+        /* CERT ERR33-C: Always check return values of functions and handle errors */
     }
 
     uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
@@ -166,6 +184,7 @@ float Read_Water_Level_Luar_cm(void)
     if (HAL_ADC_PollForConversion(&hadc2, 10) != HAL_OK)
     {
         return -1.0f;
+        /* CERT ERR33-C: Always handle function failure properly */
     }
 
     uint32_t adc_value = HAL_ADC_GetValue(&hadc2);
@@ -181,14 +200,9 @@ static void SystemClock_Config(void)
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-    /** Configure the main internal regulator output voltage
-    */
     __HAL_RCC_PWR_CLK_ENABLE();
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
-    /** Initializes the RCC Oscillators according to the specified parameters
-    * in the RCC_OscInitTypeDef structure.
-    */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -198,8 +212,6 @@ static void SystemClock_Config(void)
         Error_Handler();
     }
 
-    /** Initializes the CPU, AHB and APB buses clocks
-    */
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                                   |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
@@ -222,10 +234,8 @@ static void MX_GPIO_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    /* Enable GPIOA clock */
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
-    /* Configure GPIO pins : Relay_BUka_Pin Relay_Tutup_Pin Relay_Pompa_Pin */
     GPIO_InitStruct.Pin = RELAY_OPEN_GATE_GPIO_PIN | RELAY_CLOSE_GATE_GPIO_PIN | RELAY_PUMP_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -242,7 +252,6 @@ static void MX_ADC1_Init(void)
 {
     ADC_ChannelConfTypeDef sConfig = {0};
 
-    /* Configure the global features of the ADC */
     hadc1.Instance = ADC1;
     hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
     hadc1.Init.Resolution = ADC_RESOLUTION_12B;
@@ -260,7 +269,6 @@ static void MX_ADC1_Init(void)
         Error_Handler();
     }
 
-    /* Configure for the selected ADC regular channel */
     sConfig.Channel = ADC_CHANNEL_1;  // PA1
     sConfig.Rank = 1;
     sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
@@ -276,7 +284,6 @@ static void MX_ADC2_Init(void)
 {
     ADC_ChannelConfTypeDef sConfig = {0};
 
-    /* Configure the global features of the ADC */
     hadc2.Instance = ADC2;
     hadc2.Init = hadc1.Init;
     if (HAL_ADC_Init(&hadc2) != HAL_OK)
@@ -284,7 +291,6 @@ static void MX_ADC2_Init(void)
         Error_Handler();
     }
 
-    /* Configure for the selected ADC regular channel */
     sConfig.Channel = ADC_CHANNEL_2;  // PA2
     sConfig.Rank = 1;
     sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
@@ -297,11 +303,9 @@ static void MX_ADC2_Init(void)
   */
 void Error_Handler(void)
 {
-    /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
     while (1)
     {
     }
-    /* USER CODE END Error_Handler_Debug */
+    /* CERT MSC32-C: Infinite loop in error handler is valid for safe shutdown. */
 }
