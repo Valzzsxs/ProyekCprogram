@@ -2,7 +2,7 @@
 ![Alt text](https://github.com/Valzzsxs/ProyekCprogram/blob/main/waduk1.jpg)
 ## 📌 Deskripsi Proyek
 
-Proyek ini merupakan sistem otomasi pengelolaan air waduk menggunakan mikrokontroler **STM32**. Sistem secara otomatis **mengontrol gerbang air** dan **mengaktifkan pompa air** berdasarkan perbedaan ketinggian air di dalam waduk dan di luar waduk, menggunakan dua sensor level air yang dibaca melalui ADC (Analog to Digital Converter).  
+Project ini merancang sistem irigasi otomatis berbasis mikrokontroler STM32 dengan sensor ketinggian air analog untuk mengatur pompa dan gerbang irigasi secara otomatis. Keputusan sistem didasarkan pada perbandingan ketinggian air antara waduk dan lahan sawah. Sistem mengenali tiga kondisi utama serta dilengkapi logika histeresis: pompa menyala saat air luar ≥50 cm dan mati saat ≤30 cm. Hasil simulasi menunjukkan respons real-time sesuai algoritma. Sistem ini berpotensi mendukung pertanian cerdas berbasis teknologi tertanam..  
 Tujuan utamanya adalah:
 
 - Membuka atau menutup **gerbang air** saat terjadi perbedaan tinggi air.
