@@ -1,4 +1,4 @@
-# STM32 Otomasi Gerbang dan Pompa Waduk
+# Optimasi Distribusi Air Sawah melalui Sistem Irigasi Otomatis Berbasis Mikrokontroler STM32
 ![Alt text](https://github.com/Valzzsxs/ProyekCprogram/blob/main/waduk1.jpg)
 ## 📌 Deskripsi Proyek
 
