@@ -66,8 +66,8 @@ Sistem ini cocok untuk proyek pengelolaan air irigasi, bendungan mini, atau sist
 ## 🛠️ Cara Build dan Flash Kode
 
 ### 1. Instalasi Tools
-- STM32CubeIDE **atau** VSCode + STM32CubeMX + arm-none-eabi toolchain
-- ST-Link / USB-to-Serial Programmer
+- STM32CubeMX + VSCode + KeilVision + MDK-Arm
+- Program code
 
 ### 2. Konfigurasi STM32CubeMX (jika dari nol)
 - Aktifkan ADC1 pada PA1 dan ADC2 pada PA2
