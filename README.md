@@ -1,12 +1,117 @@
-# Embeded System Pada SIstem Irigasi Persawahan
+# STM32 Otomasi Gerbang dan Pompa Waduk
 ![Alt text](https://github.com/Valzzsxs/ProyekCprogram/blob/main/waduk1.jpg)
+## 📌 Deskripsi Proyek
 
-Proyek ini bertujuan untuk mengontrol gerbang air dan pompa pada sebuah waduk menggunakan mikrokontroler STM32. Sistem ini mengandalkan dua sensor untuk memantau level air di dalam waduk dan di luar waduk. Berdasarkan pembacaan dari sensor tersebut, sistem akan mengontrol gerbang dan pompa secara otomatis untuk irigasi sawah. Sistem ini menggunakan 3 relay:
-1. **Relay 1 (Buka Gerbang)**: Mengontrol motor untuk membuka gerbang air.
-2. **Relay 2 (Tutup Gerbang)**: Mengontrol motor untuk menutup gerbang air.
-3. **Relay 3 (Pompa)**: Mengontrol pompa untuk memasukkan air ke dalam waduk ketika level air di dalam dan di luar waduk hampir sama.
+Proyek ini merupakan sistem otomasi pengelolaan air waduk menggunakan mikrokontroler **STM32**. Sistem secara otomatis **mengontrol gerbang air** dan **mengaktifkan pompa air** berdasarkan perbedaan ketinggian air di dalam waduk dan di luar waduk, menggunakan dua sensor level air yang dibaca melalui ADC (Analog to Digital Converter).  
+Tujuan utamanya adalah:
 
-## Authors
+- Membuka atau menutup **gerbang air** saat terjadi perbedaan tinggi air.
+- Mengaktifkan **pompa air** saat kondisi tertentu terpenuhi.
+- Menyediakan **mode kuras otomatis** saat kondisi ketinggian air tertentu terpenuhi.
+
+Sistem ini cocok untuk proyek pengelolaan air irigasi, bendungan mini, atau sistem smart farming berbasis kontrol mikrokontroler.
+
+---
+
+## 🧠 Fitur Utama
+
+- Pembacaan level air **dua titik** menggunakan ADC1 dan ADC2.
+- Otomasi:
+  - Buka/tutup **gerbang air otomatis** berdasarkan perbedaan ketinggian air.
+  - Aktifkan **pompa air** saat level air seimbang atau saat mode kuras.
+  - **Mode kuras otomatis**: menyedot air keluar jika tinggi air dalam dan luar 50 cm.
+- Penanganan error: jika sensor gagal membaca, sistem masuk mode **fail-safe** (semua relay off).
+
+---
+
+## 🔧 Perangkat Keras yang Digunakan
+
+- STM32Fxx (contoh: STM32F103C8T6 atau STM32F401)
+- 2x Sensor Level Air (analog)
+- 3x Relay Module (5V)
+  - Relay 1: Buka gerbang air
+  - Relay 2: Tutup gerbang air
+  - Relay 3: Pompa air
+- Catu daya 5V dan 3.3V
+- Kabel dan breadboard (opsional)
+
+---
+
+## ⚙️ Pin Konfigurasi
+
+| Perangkat       | Pin STM32 | Fungsi                  |
+|-----------------|-----------|-------------------------|
+| Sensor Waduk    | PA1 (ADC1)| Ketinggian air dalam    |
+| Sensor Luar     | PA2 (ADC2)| Ketinggian air luar     |
+| Relay Buka Gate | PA4       | Aktifkan relay buka     |
+| Relay Tutup Gate| PA5       | Aktifkan relay tutup    |
+| Relay Pompa     | PA6       | Aktifkan pompa air      |
+
+---
+
+## 🧪 Cara Kerja Sistem
+
+1. **Sensor membaca** tinggi air dari dalam dan luar waduk melalui ADC.
+2. Kode mengonversi nilai ADC ke satuan cm.
+3. Logika berikut dieksekusi:
+   - Jika tinggi air luar > dalam + 5 cm: buka gerbang.
+   - Jika tinggi air luar ≈ dalam: tutup gerbang & nyalakan pompa.
+   - Jika tinggi air luar < dalam: tutup gerbang & matikan pompa.
+4. Jika tinggi air dalam dan luar **≈ 50 cm**, aktifkan mode **kuras otomatis**.
+   - Pompa menyala sampai tinggi luar < 30 cm.
+5. Bila pembacaan ADC gagal, **semua relay dimatikan** untuk keamanan.
+
+---
+
+## 🛠️ Cara Build dan Flash Kode
+
+### 1. Instalasi Tools
+- STM32CubeIDE **atau** VSCode + STM32CubeMX + arm-none-eabi toolchain
+- ST-Link / USB-to-Serial Programmer
+
+### 2. Konfigurasi STM32CubeMX (jika dari nol)
+- Aktifkan ADC1 pada PA1 dan ADC2 pada PA2
+- Aktifkan GPIO Output: PA4, PA5, PA6
+- Clock: HSI Internal
+
+### 3. Build Proyek
+- Import kode `main.c` ini ke proyek STM32 Anda
+- Tambahkan fungsi init (`MX_ADC1_Init`, dll) di `main.c`
+- Build dan flash ke board STM32
+
+### 4. Jalankan Sistem
+- Sambungkan sensor dan relay sesuai tabel pin
+- Nyalakan board, sistem akan otomatis berjalan sesuai kondisi air
+
+---
+
+## ✅ Tips Tambahan
+
+- Pastikan sensor level air menghasilkan tegangan antara 0–3.3V agar terbaca oleh ADC.
+- Gunakan multimeter untuk mengkalibrasi sensor sebelum digunakan.
+- Tambahkan log serial (UART) untuk debugging saat pengujian awal.
+- Pertimbangkan watchdog timer untuk meningkatkan keandalan sistem.
+
+---
+
+## 🧑‍💻 Sertifikasi dan Coding Standards
+
+Kode ini telah mengikuti beberapa standar keamanan dan keandalan dari:
+- **CERT C Secure Coding Standard**:
+  - ERR33-C: Cek error dari fungsi HAL
+  - EXP33-C: Validasi semua inisialisasi sistem
+  - FLP34-C: Validasi nilai floating point
+- **MISRA C (partial)** untuk manajemen kontrol dan validasi error
+
+---
+
+## 📄 Lisensi
+
+Kode ini hanya sebagai contoh code embeded sistem irigasi -- Kelompok 7.
+
+---
+
+## ✍️ Penulis
 
 - Muhammad 'Azmilfadhil S. (2042231003)
 - Muhammad Ali Makki (2042231023)
@@ -16,89 +121,3 @@ Proyek ini bertujuan untuk mengontrol gerbang air dan pompa pada sebuah waduk me
 
 Teknik Instrumentasi - Institut Teknologi Sepuluh Nopember
 
-## Daftar Isi
-- [Gambaran Sistem](#gambaran-sistem)
-- [Pengaturan Perangkat Keras](#pengaturan-perangkat-keras)
-- [Logika Perangkat Lunak](#logika-perangkat-lunak)
-- [Penjelasan Kode](#penjelasan-kode)
-- [Cara Penggunaan](#cara-penggunaan)
-- [Lisensi](#lisensi)
-
-## Gambaran Sistem
-Sistem ini terdiri dari:
-1. **Sensor Level Air**: Mengukur level air di dalam waduk (`sensor 1`) dan di luar waduk (`sensor 2`).
-2. **Motor dan Relay**: Motor digunakan untuk mengontrol pembukaan dan penutupan gerbang air. Dua relay digunakan untuk mengontrol arah motor.
-3. **Pompa dan Relay**: Pompa digunakan untuk memasukkan air ke dalam waduk ketika level air di dalam dan di luar waduk hampir sama.
-
-### Pin GPIO
-- **Relay 1 (Buka Gerbang)**: PA4
-- **Relay 2 (Tutup Gerbang)**: PA5
-- **Relay 3 (Pompa)**: PA6
-- **Sensor Level Air 1 (Dalam Waduk)**: ADC1 (PA1)
-- **Sensor Level Air 2 (Luar Waduk)**: ADC2 (PA2)
-
-## Pengaturan Perangkat Keras
-- **STM32**: Mikrokontroler digunakan untuk menangani input ADC dari sensor level air dan mengontrol pin GPIO untuk operasi relay.
-- **Relay 1**: Mengontrol motor untuk membuka gerbang (terhubung ke pin GPIO PA4).
-- **Relay 2**: Mengontrol motor untuk menutup gerbang (terhubung ke pin GPIO PA5).
-- **Relay 3**: Mengontrol pompa (terhubung ke pin GPIO PA6).
-- **Sensor Level Air**: Sensor terhubung ke saluran ADC (misalnya, ADC1 untuk sensor dalam waduk dan ADC2 untuk sensor luar waduk).
-
-## Logika Perangkat Lunak
-
-1. **Membaca Data Sensor**: Pembacaan level air dilakukan dari dua sensor:
-   - `Sensor 1`: Mengukur level air di dalam waduk.
-   - `Sensor 2`: Mengukur level air di luar waduk.
-
-2. **Membandingkan Level Air**:
-   - Jika level air di luar lebih tinggi dari dalam lebih dari 5 cm, maka gerbang dibuka dengan mengaktifkan Relay 1 (Buka Gerbang) dan Relay 2 (Tutup Gerbang) dimatikan.
-   - Jika level air hampir sama (perbedaan < 1 cm), maka gerbang ditutup dengan mengaktifkan Relay 2 (Tutup Gerbang) dan Relay 1 (Buka Gerbang) dimatikan, dan pompa dihidupkan.
-   - Jika level air di luar lebih rendah dari dalam, maka gerbang ditutup dan pompa dimatikan.
-
-3. **Logika Kontrol**: Status relay dikontrol dalam sebuah loop berkelanjutan dengan delay untuk memeriksa level air pada interval waktu tertentu.
-
-## Penjelasan Kode
-
-### Fungsi Utama
-
-- **`Convert_ADC_to_cm()`**:
-  Mengonversi nilai ADC dari sensor level air menjadi tinggi air dalam satuan sentimeter.
-
-- **`Read_Water_Level_Waduk_cm()`**:
-  Membaca level air di dalam waduk dengan memicu konversi ADC dan mendapatkan hasilnya.
-
-- **`Read_Water_Level_Luar_cm()`**:
-  Membaca level air di luar waduk, mirip dengan fungsi di atas.
-
-- **Loop Utama**:
-  Pada fungsi `main()`, level air diperiksa secara berkala. Berdasarkan perbandingan antara `tinggiWaduk` dan `tinggiLuar`, relay untuk motor dan pompa diaktifkan sesuai dengan logika yang telah ditentukan.
-
-### Kontrol Pin GPIO
-
-- **Relay 1 (Buka Gerbang)**: Mengaktifkan pin `PA4` untuk menghidupkan relay dan membuka gerbang.
-- **Relay 2 (Tutup Gerbang)**: Mengaktifkan pin `PA5` untuk menghidupkan relay dan menutup gerbang.
-- **Relay 3 (Pompa)**: Mengaktifkan pin `PA6` untuk menghidupkan pompa sesuai kebutuhan.
-
-### Alur Kerja Contoh
-
-1. **Air di luar lebih tinggi dari dalam lebih dari 5 cm**:
-   - Buka gerbang (`Relay 1` ON, `Relay 2` OFF).
-   - Matikan pompa.
-
-2. **Level air hampir sama**:
-   - Tutup gerbang (`Relay 1` OFF, `Relay 2` ON).
-   - Hidupkan pompa (`Relay 3` ON).
-
-3. **Air di luar lebih rendah dari dalam**:
-   - Tutup gerbang (`Relay 1` OFF, `Relay 2` ON).
-   - Matikan pompa.
-
-## Cara Penggunaan
-
-1. **Hubungkan Perangkat Keras**: Pastikan sensor level air terhubung ke pin ADC yang benar (ADC1 dan ADC2). Hubungkan relay ke pin GPIO yang ditentukan (PA4, PA5, PA6) untuk kontrol motor dan pompa.
-2. **Kompilasi dan Upload**: Gunakan STM32CubeIDE atau alat lain yang sesuai untuk mengkompilasi dan mengupload kode ke mikrokontroler STM32.
-3. **Pantau dan Uji**: Setelah diupload, sistem akan memeriksa level air secara berkelanjutan dan mengontrol gerbang dan pompa sesuai dengan logika yang telah ditentukan.
-
-## Lisensi
-
-Kelompok 7 Mata Kuliah Pemrograman Kontroller.
